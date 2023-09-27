@@ -16,7 +16,7 @@ public class PdfToDxfController : ControllerBase
         try {
             if(files == null || files.Count() == 0)
                 return NotFound();
-            string directoryPath = Path.Combine(Path.GetTempPath());//"C:\\Users\\usuario\\source\\repos\\FileManager\\export"; // Replace with your directory path
+            string directoryPath = "C:\\Users\\usuario\\source\\repos\\FileManager\\PdfToDxf\\export"; // Replace with your directory path
             DeletFilesInPath(directoryPath);
             var pathGuid = Guid.NewGuid().ToString();
             directoryPath = Path.Combine(directoryPath);

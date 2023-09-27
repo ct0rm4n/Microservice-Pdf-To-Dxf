@@ -18,13 +18,7 @@ namespace FileManager.Services
     {
         public void GetFromImages(string directoryPath, string fileName)
         {
-            var listOfOBjects = ConvertPdfToImage(directoryPath, fileName);
-            var count = 0;
-            foreach(var page in listOfOBjects)
-            {
-                count = 1 + count;
-                Run(new Options { Image = $"image_page_{count}.Tiff", PageIndex = count }, directoryPath);
-            }
+            var listOfOBjects = ConvertPdfToImage(directoryPath, fileName);            
             RunVertical(listOfOBjects, directoryPath);
         }
 
@@ -219,7 +213,7 @@ namespace FileManager.Services
             {
                 count = count + 1;
                 var options = new Options { Image = $"image_page_{count}.Tiff", PageIndex = count };
-                Mat image = new Mat(Path.Combine(Path.Combine(directoryPath, "dxf"), options.Image));
+                Mat image = new Mat(Path.Combine(directoryPath, options.Image));
                 Mat orig = image.Clone();
                 double ratio = image.Height / 500.0;
                 image = ImageUtil.Resize(image, height: 900);
@@ -286,8 +280,8 @@ namespace FileManager.Services
                         else if (startY != -1)
                         {
                             int endY = y - 1;
-                            Vector2 startPoint = new Vector2(startX * scale, (imageHeight - (startY + Convert.ToInt32(currentPositionY))) * scale);
-                            Vector2 endPoint = new Vector2(x * scale, (imageHeight - (startY + Convert.ToInt32(currentPositionY))) * scale);
+                            Vector2 startPoint = new Vector2(startX * scale, (startY - Convert.ToInt32(currentPositionY)) * scale);
+                            Vector2 endPoint = new Vector2(x * scale, (startY - Convert.ToInt32(currentPositionY)) * scale);
                             netDxf.Entities.Line dxfLine = new netDxf.Entities.Line(startPoint, endPoint);
                             lines.Add(dxfLine);
                             startY = -1;
@@ -302,7 +296,8 @@ namespace FileManager.Services
             }
             doc.AddEntity(lines);
             using (var ms = new MemoryStream())
-            {                
+            {
+                directoryPath = System.IO.Path.Combine(directoryPath, "dxf");
                 var name = System.IO.Path.Combine(directoryPath, $"image_page_777.dxf");
                 doc.Save(name);
                 ms.Close();
